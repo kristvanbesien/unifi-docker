@@ -13,7 +13,11 @@ services:
       - mongo
     init: true
     networks:
-      - unifi
+      management:
+        ipv4_address: 192.168.10.2
+      home:
+        ipv4_address: 192.168.3.2
+      unifi:
     restart: always
     volumes:
       - data:/unifi/data
@@ -24,6 +28,10 @@ services:
       DB_URI: mongodb://mongo/unifi
       STATDB_URI: mongodb://mongo/unifi_stat
       DB_NAME: unifi
+      RUNAS_UID0: $RUNAS_UID0
+      TZ: $TZ
+      UNIFI_UID: $UNIFI_UID
+      UNIFI_GID: $UNIFI_GID
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -47,3 +55,24 @@ volumes:
 
 networks:
   unifi:
+  management:
+    driver: macvlan
+    driver_opts:
+      parent: enp1s0.10 
+    ipam:
+      config:    
+      - subnet: 192.168.10.0/24
+  home:
+    driver: macvlan
+    driver_opts:
+      parent: enp1s0
+    ipam:
+      config:
+      - subnet: 192.168.3.0/24
+        gateway: 192.168.3.1
+
+
+
+
+
+
